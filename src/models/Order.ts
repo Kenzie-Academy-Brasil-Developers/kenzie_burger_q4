@@ -4,7 +4,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from "typeorm";
+import OrderProduct from "./OrderProduct";
 
 @Entity("orders")
 class Order {
@@ -13,6 +15,9 @@ class Order {
 
   @Column()
   desk: string;
+
+  @OneToMany(() => OrderProduct, (orderProduct) => orderProduct.order)
+  products: OrderProduct[];
 
   @CreateDateColumn()
   created_at: Date;

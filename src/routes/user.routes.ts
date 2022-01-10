@@ -1,6 +1,7 @@
 import { classToClass } from "class-transformer";
 import { Router } from "express";
 import { getCustomRepository } from "typeorm";
+import ensureAuth from "../middlewares/ensureAuth";
 import UserRepository from "../repositories/UserRepository";
 
 import CreateUserService from "../services/User/CreateUserService";
@@ -20,8 +21,10 @@ userRouter.post("/", async (request, response) => {
     password,
   });
 
-  return response.status(201).json(user);
+  return response.status(201).json(classToClass(user));
 });
+
+userRouter.use(ensureAuth);
 
 userRouter.get("/", async (request, response) => {
   const userRepository = getCustomRepository(UserRepository);
@@ -31,8 +34,8 @@ userRouter.get("/", async (request, response) => {
   return response.json(classToClass(users));
 });
 
-userRouter.patch("/:user_id", async (request, response) => {
-  const { user_id } = request.params;
+// /users/profile
+userRouter.patch("/profile", async (request, response) => {
   const { name, email, password, old_password } = request.body;
 
   const updateUser = new UpdateUserService();
@@ -42,19 +45,18 @@ userRouter.patch("/:user_id", async (request, response) => {
     email,
     password,
     old_password,
-    user_id,
+    user_id: request.user.id,
   });
 
   return response.json(classToClass(user));
 });
 
-userRouter.delete("/:user_id", async (request, response) => {
-  const { user_id } = request.params;
-
+// /users/profile
+userRouter.delete("/profile", async (request, response) => {
   const deleteUser = new DeleteUserService();
 
   await deleteUser.execute({
-    id: user_id,
+    id: request.user.id,
   });
 
   return response.status(204).json();
