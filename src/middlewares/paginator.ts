@@ -1,12 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 
 export default function Paginator(
-  request: Request,
-  response: Response,
+  req: Request,
+  res: Response,
   next: NextFunction
 ): void {
-  let { perPage, page } = request.query;
-
+  let { perPage, page } = req.query;
   let realPage: number;
   let realTake: number;
 
@@ -15,14 +14,13 @@ export default function Paginator(
     perPage = "15";
     realTake = 15;
   }
-
-  if (page) realPage = +page === 1 ? 0 : +page - 1 * realTake;
+  if (page) realPage = +page === 1 ? 0 : (+page - 1) * realTake;
   else {
     realPage = 0;
     page = "1";
   }
 
-  request.pagination = {
+  req.pagination = {
     realPage,
     realTake,
   };
@@ -30,11 +28,11 @@ export default function Paginator(
   let intPage = Number(page);
 
   const nextUrl = `${process.env.APP_API_URL}${
-    request.baseUrl
+    req.baseUrl
   }?perPage=${perPage}&page=${(intPage += 1)}`;
 
-  response.header("Access-Control-Expose-Headers", "*");
-  response.header({ page, perPage, nextUrl });
+  res.header("Access-Control-Expose-Headers", "*");
+  res.header({ page, perPage, nextUrl });
 
   return next();
 }
