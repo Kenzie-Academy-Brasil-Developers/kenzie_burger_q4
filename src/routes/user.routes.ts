@@ -4,6 +4,9 @@ import { getCustomRepository } from "typeorm";
 import ensureAuth from "../middlewares/ensureAuth";
 import UserRepository from "../repositories/UserRepository";
 
+import * as yup from "yup";
+import AppError from "../errors/AppError";
+
 import CreateUserService from "../services/User/CreateUserService";
 import DeleteUserService from "../services/User/DeleteUserService";
 import UpdateUserService from "../services/User/UpdateUserService";
@@ -11,6 +14,18 @@ import UpdateUserService from "../services/User/UpdateUserService";
 const userRouter = Router();
 
 userRouter.post("/", async (request, response) => {
+  const schema = yup.object().shape({
+    email: yup.string().email().required(),
+    name: yup.string().email().required(),
+    password: yup.string().required(),
+  });
+
+  await schema
+    .validate(request.body, { abortEarly: false })
+    .catch(({ errors }) => {
+      throw new AppError(errors);
+    });
+
   const { name, email, password } = request.body;
 
   const createUser = new CreateUserService();

@@ -16,7 +16,9 @@ class Order {
   @Column()
   desk: string;
 
-  @OneToMany(() => OrderProduct, (orderProduct) => orderProduct.order)
+  @OneToMany(() => OrderProduct, (orderProduct) => orderProduct.order, {
+    eager: true,
+  })
   products: OrderProduct[];
 
   @CreateDateColumn()

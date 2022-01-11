@@ -14,17 +14,17 @@ class OrderProduct {
   @PrimaryGeneratedColumn()
   id: string;
 
-  @ManyToOne(() => Product)
+  @ManyToOne(() => Product, { eager: true })
   product: Product;
 
   @ManyToOne(() => Order)
   order: Order;
 
   @Column()
-  product_id: string;
+  productId: string;
 
   @Column()
-  order_id: string;
+  orderId: string;
 
   @CreateDateColumn()
   created_at: Date;
