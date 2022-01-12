@@ -7,6 +7,7 @@ import {
   OneToMany,
 } from "typeorm";
 import OrderProduct from "./OrderProduct";
+import { Expose } from "class-transformer";
 
 @Entity("orders")
 class Order {
@@ -20,6 +21,16 @@ class Order {
     eager: true,
   })
   products: OrderProduct[];
+
+  @Expose({ name: "subtotal" })
+  getSubtotal(): number {
+    const subtotal = this.products.reduce(
+      (acc, actual) => acc + Number(actual.product.price),
+      0
+    );
+
+    return subtotal;
+  }
 
   @CreateDateColumn()
   created_at: Date;

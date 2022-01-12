@@ -8,13 +8,21 @@ import CreateProductService from "../services/Products/CreateProductService";
 import DeleteProductService from "../services/Products/DeleteProductService";
 import UpdateProductService from "../services/Products/UpdateProductService";
 import AppError from "../errors/AppError";
+import Paginator from "../middlewares/paginator";
 
 const productRouter = Router();
+
+productRouter.use(Paginator);
 
 productRouter.get("/", async (request, response) => {
   const productRepository = getRepository(Product);
 
-  const products = await productRepository.find();
+  console.log(request.pagination.realPage, request.pagination.realTake);
+
+  const products = await productRepository.find({
+    take: request.pagination.realTake,
+    skip: request.pagination.realPage,
+  });
 
   return response.json(products);
 });

@@ -16,17 +16,11 @@ export default class CreateOrderService {
     const orderProductsRepository = getRepository(OrderProduct);
     const productsRepository = getRepository(Product);
 
-    products_ids.forEach(async (productId) => {
-      const product = await productsRepository
-        .findOne({
-          where: {
-            id: productId,
-          },
-        })
-        .catch((err) => {
-          throw new AppError("Invalid list of products ids");
-        });
-    });
+    const products = await productsRepository.findByIds(products_ids);
+
+    if (!products[products_ids.length - 1]) {
+      throw new AppError("Invalid list of ids");
+    }
 
     const order = orderRepository.create({
       desk,
