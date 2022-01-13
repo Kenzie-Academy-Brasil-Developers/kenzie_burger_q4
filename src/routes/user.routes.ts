@@ -16,7 +16,7 @@ const userRouter = Router();
 userRouter.post("/", async (request, response) => {
   const schema = yup.object().shape({
     email: yup.string().email().required(),
-    name: yup.string().email().required(),
+    name: yup.string().required(),
     password: yup.string().required(),
   });
 
